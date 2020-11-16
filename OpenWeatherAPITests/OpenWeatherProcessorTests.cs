@@ -1,32 +1,54 @@
-﻿using System;
+﻿using OpenWeatherAPI;
+using System;
+using System.Threading.Tasks;
+using Xunit;
 
 namespace OpenWeatherAPITests
 {
     public class OpenWeatherProcessorTests
     {
-        OpenWeatherProcessorTests _sut = new OpenWeatherProcessorTests();
+        OpenWeatherProcessor _sut = OpenWeatherProcessor.Instance;
 
 
 
-
-        public void GetOneCallAsync_IfApiKeyEmptyOrNull_ThrowArgumentException()
+        [Fact]
+        public async Task GetOneCallAsync_IfApiKeyEmptyOrNull_ThrowArgumentException()
         {
+            ApiHelper.InitializeClient();
 
+            _sut.ApiKey = null;
+
+            await Assert.ThrowsAsync<ArgumentException>(() => _sut.GetOneCallAsync());
 
         }
-
-        public void GetCurrentWeatherAsync_IfApiKeyEmptyOrNull_ThrowArgumentException()
+        [Fact]
+        public async Task GetCurrentWeatherAsync_IfApiKeyEmptyOrNull_ThrowArgumentException()
         {
+            ApiHelper.InitializeClient();
+
+            _sut.ApiKey = null;
+
+            await Assert.ThrowsAsync<ArgumentException>(() => _sut.GetCurrentWeatherAsync());
 
         }
-
-        public void GetOneCallAsync_IfApiHelperNotInitialized_ThrowArgumentException()
+        [Fact]
+        public async Task GetOneCallAsync_IfApiHelperNotInitialized_ThrowArgumentException()
         {
+            ApiHelper.ApiClient = null;
+
+            _sut.ApiKey = "test";
+
+            await Assert.ThrowsAsync<ArgumentException>(() => _sut.GetOneCallAsync());
 
         }
-
-        public void GetCurrentWeatherAsync_IfApiHelperNotInitialized_ThrowArgumentException()
+        [Fact]
+        public async Task GetCurrentWeatherAsync_IfApiHelperNotInitialized_ThrowArgumentException()
         {
+            ApiHelper.ApiClient = null;
+
+            _sut.ApiKey = "test";
+
+            await Assert.ThrowsAsync<ArgumentException>(() => _sut.GetCurrentWeatherAsync());
 
         }
 

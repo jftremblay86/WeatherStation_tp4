@@ -43,14 +43,14 @@ namespace OpenWeatherAPI
             EndPoint = $"/weather?";
         }
 
-        
+
         /// <summary>
         /// Appel le endpoint One Call API
         /// </summary>
         /// <returns></returns>
         public async Task<OpenWeatherOneCallModel> GetOneCallAsync()
         {
-            
+
             EndPoint = $"/onecall?";
 
             /// Src : https://stackoverflow.com/a/14517976/503842
@@ -93,31 +93,51 @@ namespace OpenWeatherAPI
 
         private async Task<OpenWeatherOneCallModel> doOneCall()
         {
-
-            using (HttpResponseMessage response = await ApiHelper.ApiClient.GetAsync(longUrl))
+            if (ApiHelper.ApiClient == null)
             {
-                if (response.IsSuccessStatusCode)
-                {
-                    OpenWeatherOneCallModel result = await response.Content.ReadAsAsync<OpenWeatherOneCallModel>();
-                    return result;
-                }
-
-                return null;
+                throw new ArgumentException("API Helper Client not initialized");
             }
+            else{
+                if (ApiKey == null || ApiKey == String.Empty)
+                {
+                    throw new ArgumentException("OWApiKey null or empty");
+                }
+                else
+                {
+                    using (HttpResponseMessage response = await ApiHelper.ApiClient.GetAsync(longUrl))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            OpenWeatherOneCallModel result = await response.Content.ReadAsAsync<OpenWeatherOneCallModel>();
+                            return result;
+                        }
+                        return null;
+                    }
+                }
+            }
+
+
         }
 
         private async Task<OWCurrentWeaterModel> doCurrentWeatherCall()
-        {            
-            using (HttpResponseMessage response = await ApiHelper.ApiClient.GetAsync(longUrl))
+        {
+            if (ApiHelper.ApiClient == null) throw new ArgumentException("API Helper Client not initialized");
+            else
             {
-                if (response.IsSuccessStatusCode)
+                if (ApiKey == null || ApiKey == String.Empty) throw new ArgumentException("OWApiKey null or empty");
+                else
                 {
-                    OWCurrentWeaterModel result = await response.Content.ReadAsAsync<OWCurrentWeaterModel>();
-                    return result;
+                    using (HttpResponseMessage response = await ApiHelper.ApiClient.GetAsync(longUrl))
+                    {
+                        if (response.IsSuccessStatusCode)
+                        {
+                            OWCurrentWeaterModel result = await response.Content.ReadAsAsync<OWCurrentWeaterModel>();
+                            return result;
+                        }
+                        return null;
+
+                    }
                 }
-
-                return null;
-
             }
         }
     }
